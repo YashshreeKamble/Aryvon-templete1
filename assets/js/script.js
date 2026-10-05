@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const revealTargets = document.querySelectorAll(
-    '.hero-standalone > div:first-child, .feature-card, .section .heading, .section .grid-3 > .card, .section .grid-4 > .card, .section .stats, .section .quote-box'
+    'main > .page-hero .hero-box, main > .hero .hero-box .hero-standalone > div:first-child, main > .hero .hero-box .feature-band > *, main > .section .container > .heading, main > .section .container > .grid-2 > *, main > .section .container > .grid-3 > *, main > .section .container > .grid-4 > *, main > .section .container.grid-2 > *, main > .section .container.grid-3 > *, main > .section .container.grid-4 > *, main > .section .container > .feature-band > *, main > .section .container > .text-columns > *, main > .section .container.text-columns > *, main > .section .container > .value-grid > *, main > .section .container > .team-grid > *, main > .section .container > .form-grid > *, main > .section .container.form-grid > *, main > .contact-list > *, main > .section .container > .project-grid > *, main > .section .container.project-grid > *, main > .section .container > .gallery-grid > *, main > .section .container.gallery-grid > *, main > .section .container > .process > *, main > .section .container > .stats, main > .section .container > .quote-box'
   );
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -39,6 +39,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const brandScene = document.querySelector('.brand-scene');
   const supportsTilt = window.matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)').matches;
+
+  const tiltCards = document.querySelectorAll(
+    'main .card, main .feature-card, main .value-card, main .person, main .project-card, main .gallery-item, main .process-step'
+  );
+  const raisedSurfaces = document.querySelectorAll(
+    'main .form-card, main .contact-item, main .stats, main .quote-box'
+  );
+
+  tiltCards.forEach((card) => card.classList.add('is-3d-card'));
+  raisedSurfaces.forEach((surface) => surface.classList.add('is-3d-surface'));
+
+  if (supportsTilt) {
+    tiltCards.forEach((card) => {
+      card.addEventListener('pointermove', (event) => {
+        const bounds = card.getBoundingClientRect();
+        const horizontalPosition = (event.clientX - bounds.left) / bounds.width;
+        const verticalPosition = (event.clientY - bounds.top) / bounds.height;
+
+        card.style.setProperty('--card-tilt-x', `${(0.5 - verticalPosition) * 5}deg`);
+        card.style.setProperty('--card-tilt-y', `${(horizontalPosition - 0.5) * 7}deg`);
+      });
+
+      card.addEventListener('pointerleave', () => {
+        card.style.removeProperty('--card-tilt-x');
+        card.style.removeProperty('--card-tilt-y');
+      });
+    });
+  }
 
   if (brandScene && supportsTilt) {
     brandScene.addEventListener('pointermove', (event) => {
